@@ -202,10 +202,9 @@ var Chart = _react2.default.createClass({
   },
   componentDidMount: function componentDidMount() {
     this.generateGraph();
-    //TODO Call it from componentWillReceiveProps
   },
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps');
+    // Only if there is a change to the data property do we regenerate the graph
     if (nextProps.data !== this.props.data) {
       this.generateGraph();
     }
