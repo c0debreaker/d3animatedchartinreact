@@ -32,10 +32,17 @@ var createHook = function createHook(comp, elem, statename) {
     return !!interval;
   };
   return function (transition) {
-    transition.each(function (e) {
+
+    // As the various transitions begin, record the elements which are
+    // animating and start running updateState every 16ms
+    transition.each("start", function (e) {
       elems.set(e, (elems.get(e) || new Set()).add(transition.id));
+
       interval = interval || setInterval(updateState, 16);
     });
+
+    // As the various transitions end, clean up the record of animating elements
+    // until it ends up being empty as everything has finished
     transition.each("end", function (e) {
       var anims = elems.get(e);
       anims.delete(transition.id);
@@ -44,7 +51,12 @@ var createHook = function createHook(comp, elem, statename) {
       } else {
         elems.delete(e);
       }
-      if (!elems.size) interval = clearInterval(interval);
+
+      // If there are no elements left that are animating, stop running
+      // updateState every 16ms
+      if (!elems.size) {
+        interval = clearInterval(interval);
+      }
     });
   };
 };
